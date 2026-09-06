@@ -61,13 +61,6 @@ def film_list_create_api_view(request):
         validated = validator.validated_data
 
         # step 1: receive data
-        title = request.data.get('title')
-        text = request.data.get('text')
-        release_year = request.data.get('release_year')
-        rating = request.data.get('rating')
-        is_hit = request.data.get('is_hit')
-        director_id = request.data.get('director_id')
-        genres = request.data.get('genres')
         title = validated.get('title')
         text = validated.get('text')
         release_year = validated.get('release_year')

@@ -3,7 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Film
 from django.forms import model_to_dict
-from .serializers import FilmListSerializer, FilmDetailSerializer
+from .serializers import (
+    FilmListSerializer,
+    FilmDetailSerializer,
+    FilmValidator
+)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -20,6 +24,11 @@ def film_detail_api_view(request, id):
         film.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     elif request.method == 'PUT':
+        validator = FilmValidator(data=request.data)
+        if not validator.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=validator.errors)
+        
         film.title = request.data['title']
         film.text = request.data['text']
         film.release_year = request.data['release_year']
@@ -44,6 +53,14 @@ def film_list_create_api_view(request):
         # step 3: return response
         return Response(data=list_) 
     elif request.method == 'POST':
+        # step 0: validation (existing, typing, extra)
+        validator = FilmValidator(data=request.data)
+        if not validator.is_valid():
+            return Response(status=status.HTTP_400_BAD_REQUEST,
+                            data=validator.errors)
+        validated = validator.validated_data
+
+        # step 1: receive data
         title = request.data.get('title')
         text = request.data.get('text')
         release_year = request.data.get('release_year')
@@ -51,6 +68,13 @@ def film_list_create_api_view(request):
         is_hit = request.data.get('is_hit')
         director_id = request.data.get('director_id')
         genres = request.data.get('genres')
+        title = validated.get('title')
+        text = validated.get('text')
+        release_year = validated.get('release_year')
+        rating = validated.get('rating')
+        is_hit = validated.get('is_hit')  # "y"
+        director_id = validated.get('director_id')
+        genres = validated.get('genres')
 
         film = Film.objects.create(
             title=title,

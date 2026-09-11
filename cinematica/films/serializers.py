@@ -10,7 +10,13 @@ class GenreSerializer(serializers.ModelSerializer):
 class DirectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Director
-        exclude = 'birthday'.split()
+        fields = 'id first_name last_name birthday'.split()
+
+
+class DirectorListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Director
+        fields = 'id first_name last_name'.split()
 
 class FilmDetailSerializer(serializers.ModelSerializer):
     class Meta:
